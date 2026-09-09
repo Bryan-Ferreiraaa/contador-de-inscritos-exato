@@ -5,7 +5,6 @@ let subCounterTimer
 let attempts = 0
 let error = false
 let canalAtualId = ""
-let odometerInstance = null
 const tips = ['No seu computador, pressione Ctrl + D para salvar seu contador como favorito',
 	'Clique duas vezes para entrar em tela cheia',
 	'Clique com o botão direito do mouse para ocultar o ponteiro',
@@ -28,7 +27,6 @@ window.onload = async () => {
 	!error && await getChannelData()
 	!error && writeSettings()
 	!error && buildManifest()
-	!error && initializeOdometer()
 	!error && startSubCounter()
 }
 
@@ -197,15 +195,6 @@ function buildManifest() {
 	$('head').append(`<link rel="manifest" href="${manifestURL}">`)
 }
 
-function initializeOdometer() {
-	if (typeof Odometer !== 'undefined') {
-		odometerInstance = new Odometer({
-			el: document.getElementById('subCounter'),
-			value: 0
-		})
-	}
-}
-
 function startSubCounter() {
 	subCounterTimer = window.setTimeout(getSubs, 2000)
 }
@@ -229,17 +218,10 @@ function getSubs() {
 				// Formatar o número completo com separadores de milhares
 				let countFormatted = count.toLocaleString('pt-BR')
 				
-				// Atualizar o Odometer com o valor numérico puro
-				// Odometer vai animar a transição
-				if (odometerInstance) {
-					odometerInstance.update(count)
-					// Atualizar o innerHTML com o valor formatado após a animação
-					setTimeout(() => {
-						document.getElementById('subCounter').innerHTML = countFormatted
-					}, 600)
-				} else {
-					document.getElementById('subCounter').innerHTML = countFormatted
-				}
+				// Exibir o número formatado completo
+				$('#subCounter').fadeOut(100, function() {
+					$(this).text(countFormatted).fadeIn(300)
+				})
 				
 				$('#errorGetSubs').addClass('hidden')
 				document.title = `${countFormatted} inscritos - ${defaultTitle}`

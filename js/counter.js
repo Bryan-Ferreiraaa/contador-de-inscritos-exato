@@ -5,6 +5,7 @@ let subCounterTimer
 let attempts = 0
 let error = false
 let canalAtualId = ""
+let odometerInstance = null
 const tips = ['No seu computador, pressione Ctrl + D para salvar seu contador como favorito',
 	'Clique duas vezes para entrar em tela cheia',
 	'Clique com o botão direito do mouse para ocultar o ponteiro',
@@ -27,6 +28,7 @@ window.onload = async () => {
 	!error && await getChannelData()
 	!error && writeSettings()
 	!error && buildManifest()
+	!error && initializeOdometer()
 	!error && startSubCounter()
 }
 
@@ -195,6 +197,17 @@ function buildManifest() {
 	$('head').append(`<link rel="manifest" href="${manifestURL}">`)
 }
 
+function initializeOdometer() {
+	if (typeof Odometer !== 'undefined') {
+		odometerInstance = new Odometer({
+			el: document.getElementById('subCounter'),
+			value: 0,
+			format: 'd,ddd',
+			theme: 'default'
+		})
+	}
+}
+
 function startSubCounter() {
 	subCounterTimer = window.setTimeout(getSubs, 2000)
 }
@@ -215,12 +228,15 @@ function getSubs() {
 				let count = Number(objetoSubs.count)
 				attempts = 0
 				
-				// Formatar sem abreviações - número completo
-				let countFormatted = count.toLocaleString('pt-BR')
+				// Atualizar o Odometer com o número completo
+				if (odometerInstance) {
+					odometerInstance.update(count)
+				} else {
+					$('#subCounter').html(count.toLocaleString('pt-BR'))
+				}
 				
-				$('#subCounter').html(countFormatted)
 				$('#errorGetSubs').addClass('hidden')
-				document.title = `${countFormatted} inscritos - ${defaultTitle}`
+				document.title = `${count.toLocaleString('pt-BR')} inscritos - ${defaultTitle}`
 			}
 		} catch (e) {
 			attempts++

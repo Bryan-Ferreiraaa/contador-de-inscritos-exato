@@ -4,6 +4,7 @@ let info = {}
 let subCounterTimer
 let attempts = 0
 let error = false
+let canalAtualId = ""
 const tips = ['No seu computador, pressione Ctrl + D para salvar seu contador como favorito',
 	'Clique duas vezes para entrar em tela cheia',
 	'Clique com o botão direito do mouse para ocultar o ponteiro',
@@ -71,6 +72,30 @@ async function getChannel() {
 				replaceQuery('findChan', data['items'][0]['id']['channelId'])
 				info.findBy = 'id'
 				info.findChan = data['items'][0]['id']['channelId']
+				canalAtualId = data['items'][0]['id']['channelId']
+			} else {
+				showError('Não foi possível localizar o canal', 'Tente verificar se você digitou o nome/nome de usuário/ID do canal corretamente')
+			}
+		}).fail(err => {
+			switch (err.status) {
+				case '400': showError(`Erro de autorização (${err.status})`, 'O YouTube limita a 10000 consultas ao seu servidor por dia\nTente inserir uma chave de API sua'); break
+				case '403': showError(`Erro de autorização (${err.status})`, 'A chave de API é inválida'); break
+				default: showError(`Erro ${err.status}`, 'Sem detalhes sobre este erro'); break
+			}
+		})
+	} else if (info.findBy == 'id') {
+		canalAtualId = info.findChan
+	} else if (info.findBy == 'username') {
+		// Converter username para ID usando YouTube API
+		$('#loadingMessage').text('Procurando canal')
+		
+		await $.getJSON(`https://www.googleapis.com/youtube/v3/channels?part=id&forUsername=${info.findChan}&key=${info.apiKey || atob(defaultAPIKey)}`, data => {
+			if (data['pageInfo']['totalResults'] != 0) {
+				canalAtualId = data['items'][0]['id']
+				replaceQuery('findBy', 'id')
+				replaceQuery('findChan', canalAtualId)
+				info.findBy = 'id'
+				info.findChan = canalAtualId
 			} else {
 				showError('Não foi possível localizar o canal', 'Tente verificar se você digitou o nome/nome de usuário/ID do canal corretamente')
 			}
@@ -85,26 +110,29 @@ async function getChannel() {
 }
 
 function setDataURLs() {
-	info.findBy == 'username' && (info.channelInfoURL = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails,snippet&forUsername=${info.findChan}&key=${info.apiKey || atob(defaultAPIKey)}`)
-	info.findBy == 'id' && (info.channelInfoURL = `https://www.googleapis.com/youtube/v3/channels?part=contentDetails,snippet&id=${info.findChan}&key=${info.apiKey || atob(defaultAPIKey)}`)
+	// Usando a API do Mixerno agora
+	info.mixernoURL = `https://mixerno.space/api/youtube-channel-counter/user/${canalAtualId}`
 }
 
 async function getChannelData() {
 	$('#loadingMessage').text('Procurando informações do canal')
 
-	await $.getJSON(info.channelInfoURL, data => {
-		if (data['pageInfo']['totalResults'] != 0) {
-			info.name = data['items'][0]['snippet']['title']
-			info.chanThumb = data['items'][0]['snippet']['thumbnails']['medium']['url']
-		} else {
+	await $.getJSON(info.mixernoURL, data => {
+		try {
+			const objetoNome = data.user.find(item => item.value === "name")
+			const objetoPfp = data.user.find(item => item.value === "pfp")
+			
+			if (objetoNome) {
+				info.name = objetoNome.count
+			}
+			if (objetoPfp) {
+				info.chanThumb = objetoPfp.count
+			}
+		} catch (e) {
 			showError('Não foi possível localizar o canal', 'Tente verificar se você digitou o nome/nome de usuário/ID do canal corretamente')
 		}
 	}).fail(err => {
-		switch (err.status) {
-			case '400': showError(`Erro de autorização (${err.status})`, 'O YouTube limita a 10000 consultas ao seu servidor por dia\nTente inserir uma chave de API sua'); break
-			case '403': showError(`Erro de autorização (${err.status})`, 'A chave de API é inválida'); break
-			default: showError(`Erro ${err.status}`, 'Sem detalhes sobre este erro'); break
-		}
+		showError('Erro ao conectar com a API', 'Verifique se o ID do canal está correto ou tente novamente mais tarde')
 	})
 }
 
@@ -178,26 +206,31 @@ function stopSubCounter() {
 function getSubs() {
 	$('#loadingMessage').text('Verificando número de inscritos do canal')
 
-	info.findBy == 'id' && (dataURL = `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${info.findChan}&key=${info.apiKey || atob(defaultAPIKey)}`)
-	info.findBy == 'username' && (dataURL = `https://www.googleapis.com/youtube/v3/channels?part=statistics&forUsername=${info.findChan}&key=${info.apiKey || atob(defaultAPIKey)}`)
-
-	$.getJSON(dataURL, data => {
-		let count = data.items[0].statistics.subscriberCount
-		attempts = 0
-		$('#subCounter').html(count)
-		$('#errorGetSubs').addClass('hidden')
-		if (data.items[0].statistics.hiddenSubscriberCount) {
-			$('#hideSubCount').removeClass('hidden')
-			document.title = defaultTitle
-		} else {
-			$('#hideSubCount').addClass('hidden')
-			document.title = `${count} inscritos - ${defaultTitle}`
+	// Usando API do Mixerno para pegar os dados em tempo real
+	$.getJSON(info.mixernoURL, data => {
+		try {
+			const objetoSubs = data.counts.find(item => item.value === "subscribers")
+			
+			if (objetoSubs) {
+				let count = Number(objetoSubs.count)
+				attempts = 0
+				
+				// Formatar sem abreviações - número completo
+				let countFormatted = count.toLocaleString('pt-BR')
+				
+				$('#subCounter').html(countFormatted)
+				$('#errorGetSubs').addClass('hidden')
+				document.title = `${countFormatted} inscritos - ${defaultTitle}`
+			}
+		} catch (e) {
+			attempts++
+			if (attempts >= 5) $('#errorGetSubs').removeClass('hidden')
 		}
 	}).fail(() => {
 		attempts++
 		if (attempts >= 5) $('#errorGetSubs').removeClass('hidden')
 	}).always(() => {
-		subCounterTimer = window.setTimeout(getSubs, 10000)
+		subCounterTimer = window.setTimeout(getSubs, 2000)
 	})
 
 	$('#loadingScreen').fadeOut(200)

@@ -201,9 +201,7 @@ function initializeOdometer() {
 	if (typeof Odometer !== 'undefined') {
 		odometerInstance = new Odometer({
 			el: document.getElementById('subCounter'),
-			value: 0,
-			format: 'd,ddd',
-			theme: 'default'
+			value: 0
 		})
 	}
 }
@@ -228,15 +226,23 @@ function getSubs() {
 				let count = Number(objetoSubs.count)
 				attempts = 0
 				
-				// Atualizar o Odometer com o número completo
+				// Formatar o número completo com separadores de milhares
+				let countFormatted = count.toLocaleString('pt-BR')
+				
+				// Atualizar o Odometer com o valor numérico puro
+				// Odometer vai animar a transição
 				if (odometerInstance) {
 					odometerInstance.update(count)
+					// Atualizar o innerHTML com o valor formatado após a animação
+					setTimeout(() => {
+						document.getElementById('subCounter').innerHTML = countFormatted
+					}, 600)
 				} else {
-					$('#subCounter').html(count.toLocaleString('pt-BR'))
+					document.getElementById('subCounter').innerHTML = countFormatted
 				}
 				
 				$('#errorGetSubs').addClass('hidden')
-				document.title = `${count.toLocaleString('pt-BR')} inscritos - ${defaultTitle}`
+				document.title = `${countFormatted} inscritos - ${defaultTitle}`
 			}
 		} catch (e) {
 			attempts++

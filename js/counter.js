@@ -1,4 +1,4 @@
-const defaultAPIKey = 'QUl6YVN5QTVBaC1MbXBmTGx6ZnlMdFBjdktLeWU1cnNLYjlidUl3'
+const defaultAPIKey = 'QUl6YVN5Qnp4dERUTWZxUzJQaGJBdHNVRTlHaWxLZE1PSFF5aDNB'
 let defaultTitle = document.title
 let info = {}
 let subCounterTimer

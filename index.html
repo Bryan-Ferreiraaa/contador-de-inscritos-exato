@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="content-language" content="pt-br">
+	<meta name="description"
+		content="Acompanhe o número de inscritos de qualquer canal do YouTube em tempo real com uma interface personalizável">
+	<meta name="author" content="Jefferson Dantas">
+	<meta name="keywords" content="contador de inscritos, youtube, ao vivo, em tempo real">
+	<meta name="google-site-verification" content="g0GemjDttQ5qbIUvSPfISRFX6Z8FVoolN4LCdn4LjfA">
+
+	<!-- Facebook OpenGraph -->
+	<meta name="og:locale" content="pt_BR">
+	<meta name="og:title" content="Contador de inscritos para YouTube">
+	<meta name="og:site_name" content="GitHub">
+	<meta name="og:description"
+		content="Acompanhe o número de inscritos de qualquer canal do YouTube em tempo real com uma interface personalizável">
+	<meta name="og:type" content="website">
+	<meta name="og:url" content="https://josejefferson.github.io/contador-de-inscritos/">
+	<meta name="og:image" content="https://josejefferson.github.io/contador-de-inscritos/icons/background.png">
+	<meta name="og:image:type" content="image/png">
+	<meta name="og:image:width" content="1280">
+	<meta name="og:image:height" content="720">
+
+	<!-- Twitter Cards -->
+	<meta name="twitter:card" content="summary">
+	<meta name="twitter:title" content="Contador de inscritos para YouTube">
+	<meta name="twitter:description"
+		content="Acompanhe o número de inscritos de qualquer canal do YouTube em tempo real com uma interface personalizável">
+	<meta name="twitter:url" content="https://josejefferson.github.io/contador-de-inscritos/">
+	<meta name="twitter:image" content="https://josejefferson.github.io/contador-de-inscritos/icons/background.png">
+
+	<title>Contador de inscritos para YouTube</title>
+	<link rel="shortcut icon" href="favicon.png" type="image/png">
+	<link rel="manifest" href="manifest.json">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+	<link rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/3.7.95/css/materialdesignicons.min.css">
+	<link rel="stylesheet" href="css/index.css">
+</head>
+
+<body>
+	<div class="text-right">
+		<a href="help" target="_blank" title="Ajuda" class="mdi mdi-help-circle mr-2 text-secondary" id="help"></a>
+	</div>
+
+	<div class="container my-3">
+		<div class="alert alert-dark alert-dismissible hidden mb-5 newSubCounter">
+			Quer uma contagem de inscritos precisa? Experimente o
+			<a href="https://josejefferson.github.io/contador-de-inscritos-preciso/" target="_blank" class="alert-link">
+				novo contador de inscritos</a> para o seu canal!
+			<button type="button" class="newSubCounterClose close" data-dismiss="alert">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+
+		<form action="counter.html" method="get" target="_blank">
+			<h1 class="text-center">Contador de inscritos</h1>
+			<i class="text-center d-block mb-4">Para YouTube</i>
+
+			<div class="form-group">
+				<input type="text" class="form-control form-control-lg" name="findChan" id="findChan"
+					placeholder="Encontrar canal..." autocomplete="off" required>
+			</div>
+
+			<div class="text-md-center">
+				<span class="custom-control custom-radio d-md-inline-block mr-md-5">
+					<input type="radio" class="custom-control-input" name="findBy" id="findByName" value="name" checked>
+					<label class="custom-control-label" for="findByName">Nome do canal</label>
+				</span>
+				<span class="custom-control custom-radio d-md-inline-block mr-md-5">
+					<input type="radio" class="custom-control-input" name="findBy" id="findByUsername" value="username">
+					<label class="custom-control-label" for="findByUsername">Nome de usuário</label>
+				</span>
+				<span class="custom-control custom-radio d-md-inline-block">
+					<input type="radio" class="custom-control-input" name="findBy" id="findByID" value="id">
+					<label class="custom-control-label" for="findByID">ID do canal</label>
+				</span>
+			</div>
+
+			<hr>
+
+			<div class="text-center">
+				<button type="submit" class="btn btn-success btn-lg" id="startCounter"><i class="mdi mdi-check-circle"></i>
+					Iniciar contador</button>
+
+				<button type="submit" class="btn btn-success btn-lg rounded-circle shadow" id="floatingStart"
+					style="display:none;"><i class="mdi mdi-check-circle"></i></button>
+
+				<div class="collapse customization show">
+					<button type="button" class="btn btn-danger mt-2" data-toggle="collapse" data-target=".customization"><i
+							class="mdi mdi-format-paint"></i> Personalizar</button>
+				</div>
+			</div>
+
+			<div class="collapse border rounded p-3 customization mt-3">
+				<h2><i class="mdi mdi-format-paint"></i> Personalizar</h2>
+				<div class="form-row">
+					<div class="col-md-6 pr-md-5 sm-12">
+						<div class="form-group">
+							<label class="h6"><i class="mdi mdi-image-filter-hdr"></i> Tipo de fundo</label>
+							<div class="custom-control custom-radio">
+								<input type="radio" class="custom-control-input bgType" name="bgType" id="bgTypeChanThumb"
+									value="chanThumb" checked>
+								<label class="custom-control-label" for="bgTypeChanThumb">Imagem do canal</label>
+							</div>
+							<div class="custom-control custom-radio">
+								<input type="radio" class="custom-control-input bgType" name="bgType" id="bgTypeSolid" value="solid">
+								<label class="custom-control-label" for="bgTypeSolid">Cor sólida</label>
+								<input type="color" class="form-control" name="bgColor" id="bgColor" value="#000000">
+							</div>
+							<div class="custom-control custom-radio">
+								<input type="radio" class="custom-control-input bgType" name="bgType" id="bgTypeURL" value="url">
+								<label class="custom-control-label" for="bgTypeURL">URL</label>
+								<input type="url" class="form-control" name="bgURL" id="bgURL" placeholder="URL" autocomplete="off">
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6 pr-md-5 sm-12">
+						<div class="form-group">
+							<label class="h6" for="bgOpacity"><i class="mdi mdi-opacity"></i> Opacidade do fundo</label>
+							<div class="row input">
+								<div class="col-9">
+									<input type="range" class="custom-range" name="bgOpacity" id="bgOpacity" min="0" max="100" step="1"
+										value="50">
+								</div>
+								<div class="col-3"><span class="inputValue"></span>%</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="h6" for="bgOpacity"><i class="mdi mdi-blur"></i> Desfoque do fundo</label>
+							<div class="row input">
+								<div class="col-9">
+									<input type="range" class="custom-range" name="bgBlur" id="bgBlur" min="0" max="30" step="1"
+										value="15">
+								</div>
+								<div class="col-3"><span class="inputValue"></span>px</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="h6" for="vignette"><i class="mdi mdi-panorama-wide-angle"></i> Vinheta</label>
+							<div class="row input">
+								<div class="col-9">
+									<input type="range" class="custom-range" name="vignette" id="vignette" min="0" max="150" step="1"
+										value="0">
+								</div>
+								<div class="col-3"><span class="inputValue"></span>px</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<hr>
+
+				<div class="form-row">
+					<div class="col-md-6 pr-md-5 sm-12">
+						<div class="form-group">
+							<label class="h6"><i class="mdi mdi-arrow-all"></i> Posição da imagem do canal</label>
+							<div class="custom-control custom-radio">
+								<input type="radio" class="custom-control-input thumbPosition" name="thumbPosition"
+									id="thumbPositionTop" value="top" checked>
+								<label class="custom-control-label" for="thumbPositionTop">Topo</label>
+							</div>
+							<div class="custom-control custom-radio">
+								<input type="radio" class="custom-control-input thumbPosition" name="thumbPosition"
+									id="thumbPositionLeft" value="left">
+								<label class="custom-control-label" for="thumbPositionLeft">Esquerda</label>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="h6" for="thumbSize"><i class="mdi mdi-resize"></i> Tamanho da imagem do
+								canal</label>
+							<div class="row input">
+								<div class="col-9">
+									<input type="range" class="custom-range" name="thumbSize" id="thumbSize" min="0" max="300" step="1"
+										value="200">
+								</div>
+								<div class="col-3"><span class="inputValue"></span>px</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6 pr-md-5 sm-12">
+						<div class="form-group">
+							<label class="h6"><i class="mdi mdi-shape"></i> Formato da imagem do canal</label>
+							<div class="custom-control custom-radio">
+								<input type="radio" class="custom-control-input thumbRadius" name="thumbRadius" id="thumbRadiusCircle"
+									value="50" checked>
+								<label class="custom-control-label" for="thumbRadiusCircle">Círculo</label>
+							</div>
+							<div class="custom-control custom-radio">
+								<input type="radio" class="custom-control-input thumbRadius" name="thumbRadius" id="thumbRadiusSquare"
+									value="5">
+								<label class="custom-control-label" for="thumbRadiusSquare">Quadrado</label>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="h6" for="thumbMargin"><i class="mdi mdi-arrow-expand-vertical"></i> Margem da
+								imagem do canal</label>
+							<div class="row input">
+								<div class="col-9">
+									<input type="range" class="custom-range" name="thumbMargin" id="thumbMargin" min="0" max="100"
+										step="1" value="10">
+								</div>
+								<div class="col-3"><span class="inputValue"></span>px</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<hr>
+
+				<div class="form-row">
+					<div class="col-md-6 pr-md-5 sm-12">
+						<div class="form-group">
+							<label class="h6" for="findChan"><i class="mdi mdi-format-font"></i> Fonte do nome do canal</label>
+							<input type="text" class="form-control" name="nameFont" id="nameFont" placeholder="Fonte">
+						</div>
+
+						<div class="form-group">
+							<label class="h6" for="nameSize"><i class="mdi mdi-resize"></i> Tamanho do nome do
+								canal</label>
+							<div class="row input">
+								<div class="col-9">
+									<input type="range" class="custom-range" name="nameSize" id="nameSize" min="0" max="200" step="1"
+										value="50">
+								</div>
+								<div class="col-3"><span class="inputValue"></span>px</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="h6" for="counterSize"><i class="mdi mdi-resize"></i> Tamanho do contador de
+								inscritos</label>
+							<div class="row input">
+								<div class="col-9">
+									<input type="range" class="custom-range" name="counterSize" id="counterSize" min="0" max="300"
+										step="1" value="120">
+								</div>
+								<div class="col-3"><span class="inputValue"></span>px</div>
+							</div>
+						</div>
+
+						<div class="form-group">
+							<label class="h6" for="counterMargin"><i class="mdi mdi-arrow-expand-vertical"></i> Margem
+								do contador de inscritos</label>
+							<div class="row input">
+								<div class="col-9">
+									<input type="range" class="custom-range" name="counterMargin" id="counterMargin" min="0" max="300"
+										step="1" value="100">
+								</div>
+								<div class="col-3"><span class="inputValue"></span>px</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-6 pr-md-5 sm-12">
+						<div class="form-group">
+							<label class="h6" for="findChan"><i class="mdi mdi-format-font"></i> Fonte do contador de
+								inscritos</label>
+							<input type="text" class="form-control" name="counterFont" id="counterFont" placeholder="Fonte">
+						</div>
+
+						<div class="form-group">
+							<label class="h6"><i class="mdi mdi-palette"></i> Cor do nome do canal</label>
+							<input type="color" class="form-control" name="nameColor" id="nameColor" value="#ffffff">
+						</div>
+
+						<div class="form-group">
+							<label class="h6"><i class="mdi mdi-palette"></i> Cor do contador de inscritos</label>
+							<input type="color" class="form-control" name="counterColor" id="counterColor" value="#ffffff">
+						</div>
+
+						<div class="form-group">
+							<label class="h6" for="findChan"><i class="mdi mdi-key"></i> Chave de API (opcional,
+								avançado)</label>
+							<input type="text" class="form-control" name="apiKey" id="apiKey" placeholder="Chave de API">
+							<small class="form-text text-muted">Deixe em branco se não souber do que se trata</small>
+						</div>
+					</div>
+				</div>
+
+				<hr>
+
+				<div class="collapse customCSS show">
+					<button type="button" class="btn btn-warning mb-1" data-toggle="collapse" data-target=".customCSS"><i
+							class="mdi mdi-language-css3"></i> CSS
+						personalizado</button>
+				</div>
+				<div class="collapse customCSS">
+					<h6>CSS personalizado</h6>
+					<textarea class="form-control" name="customCSS" id="customCSS" rows="10"
+						placeholder="Insira o CSS aqui..."></textarea>
+				</div>
+
+				<button type="button" class="btn btn-info mt-1" onclick="applyPreset('desktop')"><i class="mdi mdi-cogs"></i>
+					Preset Desktop</button>
+				<button type="button" class="btn btn-info mt-1" onclick="applyPreset('mobile')"><i class="mdi mdi-cogs"></i>
+					Preset Mobile</button>
+			</div>
+		</form>
+	</div>
+
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<script src="js/index.js"></script>
+
+</body>
+
+</html>

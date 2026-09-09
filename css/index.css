@@ -1,0 +1,31 @@
+#help {
+	font-size: 24px;
+}
+
+#floatingStart {
+	bottom: 10px;
+	height: 48px;
+	padding: 0 !important;
+	position: fixed;
+	right: 10px;
+	text-align: center;
+	width: 48px;
+	z-index: 1;
+}
+
+input[type=color].form-control {
+	padding: 3px 5px;
+}
+
+input[type=color].form-control::-webkit-color-swatch {
+	border: gray 1px solid;
+	border-radius: 2px;
+}
+
+#customCSS {
+	font-family: monospace;
+}
+
+.hidden {
+	display: none !important;
+}
